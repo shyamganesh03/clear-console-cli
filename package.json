@@ -1,0 +1,23 @@
+{
+  "name": "log-eraser-cli",
+  "version": "1.0.0",
+  "main": "./src/cli/index.js",
+  "workspaces":[
+    "test"
+  ],
+  "scripts": {
+    "log-eraser-cli": "node src/cli/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shyamganesh03/remove-console-log-cli.git"
+  },
+  "keywords": [],
+  "author": "shyam ganesh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shyamganesh03/remove-console-log-cli/issues"
+  },
+  "homepage": "https://github.com/shyamganesh03/remove-console-log-cli#readme",
+  "description": ""
+}
