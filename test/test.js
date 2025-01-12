@@ -1,12 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const Test = () => {
-console.log("test-console-log")
-    return (
-    <div>
-      
-    </div>
-  )
-}
+  return <div></div>;
+};
 
-export default Test
+export default Test;
