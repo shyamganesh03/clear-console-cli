@@ -1,8 +1,10 @@
 const fs = require("fs");
 const readline = require("readline");
+const path = require("path");
 
 const { getRootFolder } = require("../utils/get-root-folder");
 const { handlePrompt } = require("../utils/handle-prompt");
+const { readFile } = require("../utils/handle-file");
 
 async function handleInitializeConfigFile({ rootFolder }) {
   let canConfigure = false;
@@ -39,59 +41,49 @@ async function handleInitializeConfigFile({ rootFolder }) {
   }
 }
 
-async function readFile(path) {
-  return new Promise((resolve) => {
-    fs.readFile(path, "utf-8", async function (err, data) {
-      if (err) resolve({ err });
-      else {
-        resolve({ data });
-      }
-    });
-  });
-}
 async function handleFiles({ fileContent }) {
-  const fileList = fs.readdirSync(fileContent.root_dir);
-  const requiredFiles = fileList.filter((file) => {
-    const fileExtension = file.split(".")[1];
-    return (
-      fileExtension === "js" ||
-      fileExtension === "jsx" ||
-      fileExtension === "ts" ||
-      fileExtension === "tsx"
-    );
-  });
-  requiredFiles.map(async (fileName) => {
-    let copiedContent = "";
-    let requiredFileContent = await readFile(
-      `${fileContent.root_dir}/${fileName}`
-    );
-    if (requiredFileContent.err) {
-      throw requiredFileContent.err;
-    } else {
-      copiedContent = requiredFileContent.data;
-      const regex = /console\.log\((.*?)\)/g;
-      const matches = [...copiedContent.matchAll(regex)];
+  const rootDir = fileContent.root_dir || fileContent;
+  const fileList = fs.readdirSync(rootDir);
 
-      matches?.forEach((matchedContent) => {
-        copiedContent = copiedContent.replaceAll(`${matchedContent[0]};`, "");
-      });
-      if (copiedContent !== null)
-        fs.writeFile(
-          `${fileContent.root_dir}/${fileName}`,
-          copiedContent,
-          function (err) {
-            if (err) throw err;
-            else console.log("The Task has been completed Successfully!");
-          }
-        );
-    }
+  // Filter required files based on extensions
+  const requiredFiles = fileList.filter((file) => {
+    const fileExtension = path.extname(file).slice(1);
+    return ["js", "jsx", "ts", "tsx", ""].includes(fileExtension);
   });
+
+  // Process each required file
+  for (const fileName of requiredFiles) {
+    const filePath = path.join(rootDir, fileName);
+    const fileExtension = path.extname(fileName).slice(1);
+
+    if (fileExtension) {
+      try {
+        const fileData = await fs.promises.readFile(filePath, "utf-8");
+
+        // Remove all console.log statements
+        const updatedContent = fileData.replace(/console\.log\(.*?\);?/g, "");
+
+        // Write the updated content back to the file
+        if (fileData !== updatedContent) {
+          await fs.promises.writeFile(filePath, updatedContent, "utf-8");
+          console.log(`Updated file: ${fileName}`);
+        }
+      } catch (error) {
+        console.error(`Error processing file: ${fileName}`, error);
+      }
+    } else {
+      // Handle directories recursively
+      await handleFiles({ fileContent: filePath });
+    }
+  }
 }
+
 async function handleRemoveConsole() {
   const rootFolder = getRootFolder();
   console.log("CLI Initialized...");
   let configFileContent = await readFile(
-    `${rootFolder}/remove-console-config.json`
+    `${rootFolder}/remove-console-config.json`,
+    fs
   );
   let fileContent = JSON.parse(configFileContent?.data || "{}");
 
@@ -100,7 +92,8 @@ async function handleRemoveConsole() {
 
     setTimeout(async () => {
       configFileContent = await readFile(
-        `${rootFolder}/remove-console-config.json`
+        `${rootFolder}/remove-console-config.json`,
+        fs
       );
       fileContent = JSON.parse(configFileContent.data);
       handleFiles({ fileContent: fileContent });
@@ -110,7 +103,8 @@ async function handleRemoveConsole() {
 
     setTimeout(async () => {
       configFileContent = await readFile(
-        `${rootFolder}/remove-console-config.json`
+        `${rootFolder}/remove-console-config.json`,
+        fs
       );
       fileContent = JSON.parse(configFileContent.data);
       handleFiles({ fileContent: fileContent });
