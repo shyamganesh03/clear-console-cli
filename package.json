@@ -1,23 +1,22 @@
 {
   "name": "log-eraser-cli",
-  "version": "1.0.0",
-  "main": "./src/cli/index.js",
-  "workspaces":[
-    "test"
-  ],
-  "scripts": {
-    "log-eraser-cli": "node src/cli/index.js"
+  "version": "1.0.1",
+  "bin": {
+    "log-eraser-cli": "./src/cli/index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shyamganesh03/remove-console-log-cli.git"
+    "url": "https://github.com/shyamganesh03/remove-console-log-cli.git"
   },
-  "keywords": [],
-  "author": "shyam ganesh",
+  "keywords": [
+    "cli",
+    "remove-console-log"
+  ],
+  "author": "Shyam Ganesh",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/shyamganesh03/remove-console-log-cli/issues"
   },
   "homepage": "https://github.com/shyamganesh03/remove-console-log-cli#readme",
-  "description": ""
+  "description": "A CLI tool to remove console.log statements from JavaScript and React projects."
 }

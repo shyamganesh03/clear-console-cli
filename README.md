@@ -1,4 +1,4 @@
-# log-eraser-cli 1.0.0
+# log-eraser-cli 1.0.1
 
 **log-eraser-cli** is a lightweight and efficient CLI tool designed to remove `console.log` statements from your JavaScript or TypeScript projects. This helps maintain cleaner codebases and eliminates unnecessary logs, especially in production environments.
 
