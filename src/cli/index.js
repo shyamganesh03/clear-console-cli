@@ -25,12 +25,15 @@ async function handleInitializeConfigFile({ rootFolder }) {
       configFileContent: configFileContent,
     });
     configFileContent = await handlePrompt({
-      question: "Did you have ';' in your end code statement ? ( Y / N).",
+      question:
+        "Enter the file extensions from which you want to remove console.log (comma-separated). If not specified, default values will be used.:",
       type: "text",
-      key: "has-semi-collin",
+      key: "included_files_extensions",
       readline: readline,
       configFileContent: configFileContent,
+      isArray: true,
     });
+
     fs.writeFile(
       `${rootFolder}/remove-console-config.json`,
       JSON.stringify(configFileContent),
@@ -41,14 +44,17 @@ async function handleInitializeConfigFile({ rootFolder }) {
   }
 }
 
-async function handleFiles({ fileContent }) {
+async function handleFiles({
+  fileContent,
+  includedFileExtensionFromConfigFile = [],
+}) {
   const rootDir = fileContent.root_dir || fileContent;
   const fileList = fs.readdirSync(rootDir);
-
+  const includedFileExtension = [...includedFileExtensionFromConfigFile, ""];
   // Filter required files based on extensions
   const requiredFiles = fileList.filter((file) => {
     const fileExtension = path.extname(file).slice(1);
-    return ["js", "jsx", "ts", "tsx", ""].includes(fileExtension);
+    return includedFileExtension.includes(fileExtension);
   });
 
   // Process each required file
@@ -73,7 +79,11 @@ async function handleFiles({ fileContent }) {
       }
     } else {
       // Handle directories recursively
-      await handleFiles({ fileContent: filePath });
+      await handleFiles({
+        fileContent: filePath,
+        includedFileExtensionFromConfigFile:
+          includedFileExtensionFromConfigFile,
+      });
     }
   }
 }
@@ -96,7 +106,11 @@ async function handleRemoveConsole() {
         fs
       );
       fileContent = JSON.parse(configFileContent.data);
-      handleFiles({ fileContent: fileContent });
+      await handleFiles({
+        fileContent: fileContent,
+        includedFileExtensionFromConfigFile:
+          fileContent.included_files_extensions,
+      });
     }, 1000);
   } else if (!fileContent.root_dir) {
     await handleInitializeConfigFile({ rootFolder: rootFolder });
@@ -107,10 +121,18 @@ async function handleRemoveConsole() {
         fs
       );
       fileContent = JSON.parse(configFileContent.data);
-      handleFiles({ fileContent: fileContent });
+      await handleFiles({
+        fileContent: fileContent,
+        includedFileExtensionFromConfigFile:
+          fileContent.included_files_extensions,
+      });
     }, 1000);
   } else {
-    await handleFiles({ fileContent: fileContent });
+    await handleFiles({
+      fileContent: fileContent,
+      includedFileExtensionFromConfigFile:
+        fileContent.included_files_extensions,
+    });
   }
 }
 

@@ -4,6 +4,7 @@ export async function handlePrompt({
   configFileContent,
   key,
   readline,
+  isArray = false,
 }) {
   const prompt = readline.createInterface({
     input: process.stdin,
@@ -21,17 +22,37 @@ export async function handlePrompt({
   if (type === "y/no") {
     const answer = await askQuestion(`${question} (Y/N): `);
     if (answer.toUpperCase() === "Y") {
-      userAnswer = true;
+      userAnswer = {
+        ...configFileContent,
+        [key]: true,
+      };
     } else if (answer.toUpperCase() === "N") {
-      userAnswer = false;
+      userAnswer = {
+        ...configFileContent,
+        [key]: false,
+      };
     } else {
       console.error("Invalid input. Please enter 'Y' or 'N'.");
       prompt.close();
       process.exit(1);
     }
   } else {
-    const answer = await askQuestion(question);
-    userAnswer = { ...configFileContent, [key]: answer };
+    let answer = await askQuestion(question);
+    if (isArray) {
+      if (!!answer) {
+        answer = answer
+          .split(",")
+          ?.map((splittedStrings) => splittedStrings?.trim())
+          ?.filter((splittedStrings) => !!splittedStrings);
+      } else {
+        answer = ["js", "jsx", "ts", "tsx"];
+      }
+    }
+
+    userAnswer = {
+      ...configFileContent,
+      [key]: answer,
+    };
   }
 
   prompt.close();
