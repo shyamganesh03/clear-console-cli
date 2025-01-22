@@ -1,6 +1,9 @@
-# log-eraser-cli 1.0.3
+# clear-log-cli 1.0.0
 
-**log-eraser-cli** is a lightweight and efficient CLI tool designed to remove `console.log` statements from your JavaScript or TypeScript projects. This helps maintain cleaner codebases and eliminates unnecessary logs, especially in production environments.
+**clear-log-cli** is a lightweight and efficient CLI tool designed to remove `console.log` statements from your JavaScript or TypeScript projects. This helps maintain cleaner codebases and eliminates unnecessary logs, especially in production environments.
+
+
+![remove-console-log](https://github.com/user-attachments/assets/99595024-f0bb-4560-be34-079c04c78aab)
 
 ---
 
@@ -50,7 +53,7 @@ Add the following script to your package.json file
 ```
 scripts: {
 ...
-  "remove-console-log": "log-eraser-cli"
+  "remove-console-log": "clear-log-cli"
 ...
 }
 
@@ -60,10 +63,10 @@ scripts: {
 
 ## Installation
 
-To use `log-eraser-cli`, install it as a development dependency in your project:
+To use `clear-log-cli`, install it as a development dependency in your project:
 
 ```bash
-npm install log-eraser-cli --save-dev
+npm install clear-log-cli --save-dev
      or
-yarn add log-eraser-cli --dev
+yarn add clear-log-cli --dev
 ```
