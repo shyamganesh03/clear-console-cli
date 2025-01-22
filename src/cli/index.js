@@ -28,7 +28,7 @@ async function handleInitializeConfigFile({ rootFolder }) {
     });
     configFileContent = await handlePrompt({
       question:
-        "Enter the file extensions from which you want to remove console.log (comma-separated). If not specified, default values will be used.:",
+        "Enter the file extensions from which you want to remove console.log (comma-separated) with out Dot notation eg: js,ts,etc..,. If not specified, default values will be used.:",
       type: "text",
       key: "included_files_extensions",
       readline: readline,
