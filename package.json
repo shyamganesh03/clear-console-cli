@@ -1,6 +1,6 @@
 {
   "name": "clear-log-cli",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "bin": {
     "clear-log-cli": "./src/cli/index.js"
   },
@@ -10,7 +10,10 @@
   },
   "keywords": [
     "cli",
-    "remove-console-log"
+    "console",
+    "console.log",
+    "clear console",
+    "clear console.log"
   ],
   "author": "Shyam Ganesh",
   "license": "ISC",

@@ -3,6 +3,7 @@
 const fs = require("fs");
 const readline = require("readline");
 const path = require("path");
+const { exec } = require("child_process");
 
 const { getRootFolder } = require("../utils/get-root-folder");
 const { handlePrompt } = require("../utils/handle-prompt");
@@ -34,6 +35,35 @@ async function handleInitializeConfigFile({ rootFolder }) {
       readline: readline,
       configFileContent: configFileContent,
       isArray: true,
+      defaultValue: ["js", "jsx", "ts", "tsx"],
+    });
+    configFileContent = await handlePrompt({
+      question:
+        "Enter the file or folder name to exclude. If not specified, default values will be used.:",
+      type: "text",
+      key: "included_files_extensions",
+      readline: readline,
+      configFileContent: configFileContent,
+      isArray: true,
+      defaultValue: ["node_modules"],
+    });
+
+    configFileContent = await handlePrompt({
+      question: "Enter the script command to run prettier:",
+      type: "text",
+      key: "prettier_run_command",
+      readline: readline,
+      configFileContent: configFileContent,
+      defaultValue: "format:fix",
+    });
+    configFileContent = await handlePrompt({
+      question:
+        "Enter the node version manager name which one would you like to use ? (npm or yarn or pnpm):",
+      type: "text",
+      key: "node_version_manager",
+      readline: readline,
+      configFileContent: configFileContent,
+      defaultValue: "npm",
     });
 
     fs.writeFile(
@@ -49,6 +79,7 @@ async function handleInitializeConfigFile({ rootFolder }) {
 async function handleFiles({
   fileContent,
   includedFileExtensionFromConfigFile = [],
+  excludedFolders = [],
 }) {
   const rootDir = fileContent.root_dir || fileContent;
   const fileList = fs.readdirSync(rootDir);
@@ -56,7 +87,10 @@ async function handleFiles({
   // Filter required files based on extensions
   const requiredFiles = fileList.filter((file) => {
     const fileExtension = path.extname(file).slice(1);
-    return includedFileExtension.includes(fileExtension);
+    return (
+      includedFileExtension.includes(fileExtension) &&
+      !excludedFolders.includes(file)
+    );
   });
 
   // Process each required file
@@ -85,6 +119,7 @@ async function handleFiles({
         fileContent: filePath,
         includedFileExtensionFromConfigFile:
           includedFileExtensionFromConfigFile,
+        excludedFolders: excludedFolders,
       });
     }
   }
@@ -112,6 +147,7 @@ async function handleRemoveConsole() {
         fileContent: fileContent,
         includedFileExtensionFromConfigFile:
           fileContent.included_files_extensions,
+        excludedFolders: fileContent.excluded_folders,
       });
     }, 1000);
   } else if (!fileContent.root_dir) {
@@ -127,6 +163,7 @@ async function handleRemoveConsole() {
         fileContent: fileContent,
         includedFileExtensionFromConfigFile:
           fileContent.included_files_extensions,
+        excludedFolders: fileContent.excluded_folders,
       });
     }, 1000);
   } else {
@@ -134,8 +171,33 @@ async function handleRemoveConsole() {
       fileContent: fileContent,
       includedFileExtensionFromConfigFile:
         fileContent.included_files_extensions,
+      excludedFolders: fileContent.excluded_folders,
     });
   }
+  exec(
+    `cd test && ${fileContent.node_version_manager}${
+      fileContent.node_version_manager === "npm" ? " run " : " "
+    }${fileContent.prettier_run_command} `,
+    (error, stdout, stderr) => {
+      if (error) {
+        if (
+          error.message.includes(
+            `'prettier' is not recognized as an internal or external command,`
+          )
+        )
+          console.log(
+            "prettier is not installed please config prettier to auto format your Repo."
+          );
+        else console.log(`error: ${error}`);
+        return;
+      }
+      if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+      }
+      console.log(stdout);
+    }
+  );
 }
 
 handleRemoveConsole();

@@ -5,6 +5,7 @@ export async function handlePrompt({
   key,
   readline,
   isArray = false,
+  defaultValue = [],
 }) {
   const prompt = readline.createInterface({
     input: process.stdin,
@@ -44,9 +45,10 @@ export async function handlePrompt({
           .split(",")
           ?.map((splittedStrings) => splittedStrings?.trim())
           ?.filter((splittedStrings) => !!splittedStrings);
-      } else {
-        answer = ["js", "jsx", "ts", "tsx"];
       }
+    }
+    if (!answer) {
+      answer = defaultValue;
     }
 
     userAnswer = {
