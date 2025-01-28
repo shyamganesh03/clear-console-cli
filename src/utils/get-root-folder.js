@@ -1,4 +1,4 @@
-import path from 'path'
+const path = require("path");
 
 /**
  * Get the root folder of the project.
@@ -8,4 +8,4 @@ function getRootFolder() {
   return path.resolve(process.cwd());
 }
 
-export { getRootFolder };
+module.exports = { getRootFolder };

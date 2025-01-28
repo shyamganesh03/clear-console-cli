@@ -1,4 +1,4 @@
-export async function handlePrompt({
+async function handlePrompt({
   question,
   type,
   configFileContent,
@@ -60,3 +60,5 @@ export async function handlePrompt({
   prompt.close();
   return userAnswer;
 }
+
+module.exports = { handlePrompt };

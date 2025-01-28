@@ -41,7 +41,7 @@ async function handleInitializeConfigFile({ rootFolder }) {
       question:
         "Enter the file or folder name to exclude. If not specified, default values will be used.:",
       type: "text",
-      key: "included_files_extensions",
+      key: "excluded_folders",
       readline: readline,
       configFileContent: configFileContent,
       isArray: true,
@@ -84,6 +84,7 @@ async function handleFiles({
   const rootDir = fileContent.root_dir || fileContent;
   const fileList = fs.readdirSync(rootDir);
   const includedFileExtension = [...includedFileExtensionFromConfigFile, ""];
+
   // Filter required files based on extensions
   const requiredFiles = fileList.filter((file) => {
     const fileExtension = path.extname(file).slice(1);
@@ -175,7 +176,7 @@ async function handleRemoveConsole() {
     });
   }
   exec(
-    `cd test && ${fileContent.node_version_manager}${
+    `${fileContent.node_version_manager}${
       fileContent.node_version_manager === "npm" ? " run " : " "
     }${fileContent.prettier_run_command} `,
     (error, stdout, stderr) => {
